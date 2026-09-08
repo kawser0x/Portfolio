@@ -52,14 +52,6 @@ const AboutPage = () => {
                 the thrill of optimizing a piece of code to run just a fraction
                 of a second faster.
               </p>
-              <p>
-                🎥 Beyond the terminal, I believe in the power of storytelling
-                and community. I run a{" "}
-                <strong>YouTube channel (YB Family)</strong> focused on daily
-                life vlogs and the chaotic fun of living with cats. It keeps my
-                creative muscles flexed and reminds me that technology is
-                ultimately about connecting with people.
-              </p>
             </div>
 
             <div className="mt-10 flex flex-wrap gap-4">

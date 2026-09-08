@@ -15,13 +15,25 @@ const Footer = () => {
               Find Me Online
             </h4>
             <div className="flex flex-wrap gap-4">
-              <a href="https://github.com/kawser0x" className="link link-hover">
+              <a
+                href="https://github.com/kawser0x"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link link-hover">
                 GitHub
               </a>
-              <a href="https://www.linkedin.com/in/kawser-ahamad-09k/" className="link link-hover">
+              <a
+                href="https://www.linkedin.com/in/kawser-ahamad-09k/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link link-hover">
                 LinkedIn
               </a>
-              <a href="https://codeforces.com/profile/kawser0x" className="link link-hover">
+              <a
+                href="https://codeforces.com/profile/kawser0x"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link link-hover">
                 Codeforces
               </a>
             </div>
