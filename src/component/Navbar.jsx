@@ -2,17 +2,43 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
+  const pathname = usePathname();
   const [theme, setTheme] = useState("light");
   const [mounted, setMounted] = useState(false);
+  const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
     setMounted(true);
     const savedTheme = localStorage.getItem("theme") || "light";
     setTheme(savedTheme);
     document.documentElement.setAttribute("data-theme", savedTheme);
-  }, []);
+
+    // Scroll spy section tracking on home page
+    const handleScroll = () => {
+      if (pathname === "/") {
+        const sections = ["hero", "about", "skills", "projects", "contact"];
+        const scrollPosition = window.scrollY + 200;
+
+        for (const sectionId of sections) {
+          const element = document.getElementById(sectionId);
+          if (element) {
+            const top = element.offsetTop;
+            const height = element.offsetHeight;
+            if (scrollPosition >= top && scrollPosition < top + height) {
+              setActiveSection(sectionId);
+              break;
+            }
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pathname]);
 
   const toggleTheme = () => {
     const nextTheme = theme === "light" ? "dark" : "light";
@@ -21,34 +47,53 @@ const Navbar = () => {
     document.documentElement.setAttribute("data-theme", nextTheme);
   };
 
+  const navItems = [
+    { name: "Home", href: "/", sectionId: "hero" },
+    { name: "About", href: "/about", sectionId: "about" },
+    { name: "Skills", href: "/skills", sectionId: "skills" },
+    { name: "Projects", href: "/projects", sectionId: "projects" },
+    { name: "Contact", href: "/contact", sectionId: "contact" },
+  ];
+
+  const checkIsActive = (item) => {
+    if (pathname === "/") {
+      if (activeSection) {
+        return activeSection === item.sectionId;
+      }
+      return item.href === "/";
+    }
+    return pathname === item.href;
+  };
+
   const navLinks = (
     <>
-      <li>
-        <Link href="/">Home</Link>
-      </li>
-      <li>
-        <Link href="/about">About</Link>
-      </li>
-      <li>
-        <Link href="/skills">Skills</Link>
-      </li>
-      <li>
-        <Link href="/projects">Projects</Link>
-      </li>
-      <li>
-        <Link href="/contact">Contact</Link>
-      </li>
+      {navItems.map((item) => {
+        const isActive = checkIsActive(item);
+        return (
+          <li key={item.name}>
+            <Link
+              href={item.href}
+              className={`transition-all font-semibold rounded-lg px-3 py-2 ${
+                isActive
+                  ? "text-accent font-bold bg-accent/10 shadow-sm"
+                  : "text-base-content/80 hover:text-accent hover:bg-base-200"
+              }`}>
+              {item.name}
+            </Link>
+          </li>
+        );
+      })}
     </>
   );
 
   return (
-    <div className="navbar bg-base-100 shadow-sm fixed top-0 z-50 w-full">
+    <div className="navbar bg-base-100/90 backdrop-blur-md border-b border-base-300 shadow-sm fixed top-0 z-50 w-full px-4 md:px-8">
       <div className="navbar-start">
         <div className="dropdown">
-          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden p-1">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
+              className="h-6 w-6 text-base-content"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor">
@@ -62,27 +107,40 @@ const Navbar = () => {
           </div>
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+            className="menu menu-sm dropdown-content bg-base-100 rounded-2xl z-50 mt-3 w-52 p-2 shadow-xl border border-base-300">
             {navLinks}
           </ul>
         </div>
-        <Link href="/" className="btn btn-ghost text-xl text-accent font-bold">
-          K
+
+        {/* Dynamic Code-Style Brand Logo: { K } */}
+        <Link
+          href="/"
+          className="btn btn-ghost text-xl font-mono group flex items-center gap-1 hover:bg-transparent px-2">
+          <span className="text-accent font-bold group-hover:-translate-x-0.5 transition-transform">
+            &#123;
+          </span>
+          <span className="font-extrabold text-base-content group-hover:text-accent transition-colors">
+            K
+          </span>
+          <span className="text-accent font-bold group-hover:translate-x-0.5 transition-transform">
+            &#125;
+          </span>
         </Link>
       </div>
+
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">{navLinks}</ul>
+        <ul className="menu menu-horizontal gap-1 px-1">{navLinks}</ul>
       </div>
+
       <div className="navbar-end flex items-center gap-3">
-        {/* Theme Toggle Button (Left of Hire Me) */}
+        {/* Theme Toggle Button */}
         {mounted && (
           <button
             onClick={toggleTheme}
             aria-label="Toggle Theme"
-            className="btn btn-ghost btn-circle text-base-content hover:bg-base-200 transition-all duration-300"
+            className="btn btn-ghost btn-circle text-base-content hover:bg-base-200 transition-all"
             title={`Switch to ${theme === "light" ? "Dark" : "Light"} Mode`}>
             {theme === "light" ? (
-              /* Moon Icon for Dark Mode */
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5 text-accent"
@@ -97,7 +155,6 @@ const Navbar = () => {
                 />
               </svg>
             ) : (
-              /* Sun Icon for Light Mode */
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5 text-warning animate-pulse"
@@ -116,7 +173,7 @@ const Navbar = () => {
         )}
 
         {/* Hire Me Button */}
-        <Link href="/contact" className="btn btn-accent">
+        <Link href="/contact" className="btn btn-accent shadow-md hover:shadow-accent/40">
           Hire Me
         </Link>
       </div>
